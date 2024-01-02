@@ -20,7 +20,7 @@ const About = () => {
         <div className="mt-16 flex flex-wrap gap-10">
           {skills.map((skill) => (
             <div className="block-container w-16 h-16">
-              <div className="btn-back rounded-xl btn-back-primary" />
+              <div className="btn-back rounded-xl" />
               <div className="btn-front rounded-xl flex justify-center items-center">
                 <img
                   className="size-10 object-contain"
