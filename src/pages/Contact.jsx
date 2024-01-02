@@ -1,25 +1,30 @@
-import React, { useRef, useState } from "react";
+import React, { Suspense, useRef, useState } from "react";
 import emailjs from "@emailjs/browser";
 import useAlert from "../hooks/useAlert";
 import Alert from "../components/Alert";
+import { Canvas } from "@react-three/fiber";
+import Fox from "../models/Fox";
+import Loader from "../components/Loader";
+
 const Contact = () => {
   const [form, setForm] = useState({ name: "", email: "", message: "" });
   const formRef = useRef(null);
   const [isLoading, setIsLoading] = useState(false);
-  const [textMessage, setTextMessage] = useState({
-    text: "",
-    color: "",
-  });
+  const [currentAnimation, setCurrentAnimation] = useState("idle");
   const { alert, showAlert, hideAlert } = useAlert();
+
   const handleChange = (event) => {
     setForm({ ...form, [event.target.name]: event.target.value });
   };
-  const handleFocus = (event) => {};
-  const handleBlur = (event) => {};
+
+  const handleFocus = (event) => setCurrentAnimation("walk");
+  const handleBlur = (event) => setCurrentAnimation("idle");
+
   const handleSubmit = (event) => {
     event.preventDefault();
     if (form.name !== "" && form.email !== "" && form.message !== "") {
       setIsLoading(true);
+      setCurrentAnimation("hit");
       emailjs
         .send(
           "service_7paqlg3",
@@ -41,12 +46,18 @@ const Contact = () => {
               text: "Thank you. I will reply you as soon as possible.",
               type: "success",
             });
-            setForm({ name: "", email: "", message: "" });
+            setTimeout(() => {
+              setCurrentAnimation("idle");
+              setForm({ name: "", email: "", message: "" });
+              hideAlert();
+            }, [3000]);
+
             hideAlert();
           },
           (error) => {
             setIsLoading(false);
             console.log(error);
+            setCurrentAnimation("idle");
             showAlert({
               show: true,
               text: "something went wrong. Please try again",
@@ -60,6 +71,9 @@ const Contact = () => {
         text: "Don't leave anything empty please?",
         type: "danger",
       });
+      setTimeout(() => {
+        hideAlert();
+      }, [3000]);
     }
   };
   return (
@@ -121,6 +135,27 @@ const Contact = () => {
             {!isLoading ? "Send Message" : "Sending..."}
           </button>
         </form>
+      </div>
+      <div className="lg:w-1/2 w-full lg:h-auto md:h-[550px] h-[360px]">
+        <Canvas
+          camera={{
+            position: [0, 0, 5],
+            fov: 75,
+            near: 0.1,
+            far: 1000,
+          }}
+        >
+          <directionalLight intensity={2.5} position={[0, 0, 1]} />
+          <ambientLight intensity={0.5} />
+          <Suspense fallback={<Loader />}>
+            <Fox
+              currentAnimation={currentAnimation}
+              position={[0.9, 0.35, 0]}
+              rotation={[12.6, -0.7, 0]}
+              scale={[0.6, 0.6, 0.6]}
+            />
+          </Suspense>
+        </Canvas>
       </div>
     </section>
   );
