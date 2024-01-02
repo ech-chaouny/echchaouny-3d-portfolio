@@ -66,6 +66,7 @@ const Contact = () => {
           }
         );
     } else {
+      setCurrentAnimation("idle");
       showAlert({
         show: true,
         text: "Don't leave anything empty please?",
@@ -77,7 +78,7 @@ const Contact = () => {
     }
   };
   return (
-    <section className="relative flex lg:flex-row flex-col max-container">
+    <section className="relative flex lg:flex-row flex-col max-container h-[100vh]">
       {alert.show && <Alert {...alert} />}
       <div className="flex-1 min-w-[50%] flex-col">
         <h1 className="head-text">Get in Touch</h1>
@@ -130,7 +131,7 @@ const Contact = () => {
             className="btn"
             disabled={isLoading}
             onFocus={handleFocus}
-            onBlur={handleBlur}
+            // onBlur={handleBlur}
           >
             {!isLoading ? "Send Message" : "Sending..."}
           </button>
